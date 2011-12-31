@@ -1,0 +1,4 @@
+name: xAuthSpout
+main: org.dyndns.pamelloes.xAuthSpout.XAuthSpout
+version: 1.0
+depends: [Spout, xAuth]

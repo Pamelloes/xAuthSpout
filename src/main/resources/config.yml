@@ -1,0 +1,20 @@
+#You can remove any of these fields to have the program use the defaults. If you
+#delete the whole file, it will be restored to default. If you screw up formatting
+#one of the entries, errors WILL occur.
+message:
+    #The red title at the top of the login screen.
+    title: Hello!
+    #A list of text to be displayed under the title.
+    #There must be at least one line here or the default will be used.
+    contents:
+    - This server requires user authentication.
+    - If this is your first time put in your password,
+    - and then confirm it in the confirm dialogue.
+    - Otherwise, put in your registered password and click login.
+    - Have fun!
+login:
+    #The message shown above the register form.
+    register: Fill out the form to register for the server.
+    #the following 2 don't work because they are automatically resized to fill their container.
+    fieldwidth: 200
+    fieldheight: 20
