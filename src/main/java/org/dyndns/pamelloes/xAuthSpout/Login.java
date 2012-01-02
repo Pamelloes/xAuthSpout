@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.getspout.spoutapi.event.screen.TextFieldChangeEvent;
 import org.getspout.spoutapi.gui.Color;
 import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.ContainerType;
@@ -114,10 +115,14 @@ public class Login extends GenericContainer {
 		
 		register = config.getString("login.register","Fill out the form to register for the server.");
 		
-		textheight = config.getInt("login.fieldheight", 20);
-		textwidth = config.getInt("login.fieldwidth",200);
+		textheight = 20;
+		textwidth = 200;
 		
-		linetext = new String[] {"Username:","Password:","Confirm password:","Email (optional):"};
+		linetext = new String[4];
+		linetext[0] = config.getString("login.username", "Username:");
+		linetext[1] = config.getString("login.password", "Password:");
+		linetext[2] = config.getString("login.confirm", "Confirm password:");
+		linetext[3] = config.getString("login.email", "Email (optional):");
 		linehidechar = new boolean[] {false,true,true,false};
 	}
 	
@@ -157,7 +162,12 @@ public class Login extends GenericContainer {
 			label.setAuto(true);
 			container.addChild(label); // Attach the widget to the popup
 			
-			textfield = new GenericTextField();
+			textfield = new GenericTextField() {
+				@Override
+				public void onTextFieldChange(TextFieldChangeEvent e) {
+					setFocus(true);
+				}
+			};
 			textfield.setAnchor(WidgetAnchor.TOP_LEFT).setWidth(textwidth).setHeight(textheight); //This puts the label at top center and align the text correctly.
 			if(linehidechar[i]) textfield.setPasswordField(true);
 			container.addChild(textfield); // Attach the widget to the popuplabel = new GenericLabel("User Name:");
@@ -185,9 +195,11 @@ public class Login extends GenericContainer {
 	}
 	
 	private Object[] register() {
-		if(!getField(1).getText().equals(getField(2).getText())) return new Object[] {false, "Passwords don't match!"};
+		String dontmatch = plugin.getConfig().getString("errors.passwordmismatch", "Passwords don't match!");
+		if(!getField(1).getText().equals(getField(2).getText())) return new Object[] {false, dontmatch};
 		String[] fix = CommandLineTokenizer.tokenize(getField(1).getText() + (getField(3).getText().trim().equals("") ? "" : " " + getField(3).getText()));
-		if(fix.length<1) return new Object[] {false, "You must fill out a password!"};
+		String nopass = plugin.getConfig().getString("errors.nopassword", "You must fill out a password!");
+		if(fix.length<1) return new Object[] {false, nopass};
 		String password = fix[0];
 		String email = fix.length>1 ? fix[1] : null;
 		if (!xAuthSettings.regEnabled) {

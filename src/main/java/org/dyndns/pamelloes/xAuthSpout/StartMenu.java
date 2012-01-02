@@ -57,13 +57,15 @@ public class StartMenu extends GenericPopup {
 		ypos+=login.getHeight();
 		attachWidget(plugin, login);
 		
-		Button loginbutton = (Button) new LoginButton("Login").setWidth(200).setHeight(20); // Read more about creating widgets in Widgets
+		String logintext= login.getFieldCount()==2 ? plugin.getConfig().getString("login.loginbutton", "Login") : plugin.getConfig().getString("login.registerbutton", "Register");
+		Button loginbutton = (Button) new LoginButton(logintext).setWidth(200).setHeight(20); // Read more about creating widgets in Widgets
 		loginbutton.setAlign(WidgetAnchor.TOP_CENTER).setAnchor(WidgetAnchor.TOP_CENTER);
 		ypos+=loginbutton.getHeight()+5;
 		loginbutton.shiftYPos(ypos).shiftXPos(-100);
 		attachWidget(plugin,loginbutton); // Attach the widget to the popup
 		
-		Button exitbutton = (Button) new ExitButton("Exit").setWidth(200).setHeight(20); // Read more about creating widgets in Widgets
+		String exit = plugin.getConfig().getString("login.exitbutton", "Exit");
+		Button exitbutton = (Button) new ExitButton(exit).setWidth(200).setHeight(20); // Read more about creating widgets in Widgets
 		exitbutton.setX(0).setY(0);
 		exitbutton.setAlign(WidgetAnchor.TOP_CENTER).setAnchor(WidgetAnchor.TOP_CENTER);
 		ypos+=exitbutton.getHeight()+4;

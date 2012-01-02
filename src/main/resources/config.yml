@@ -15,6 +15,18 @@ message:
 login:
     #The message shown above the register form.
     register: Fill out the form to register for the server.
-    #the following 2 don't work because they are automatically resized to fill their container.
-    fieldwidth: 200
-    fieldheight: 20
+    #The text in each of the login lables. The last 2 are only used
+    #in the registration form. Each of these is adjacent to a
+    #corresponding textbox.
+    username: "Username:"
+    password: "Password:"
+    confirm: "Confirm password:"
+    email: "Email (Optional):"
+    #The text used in the buttons at the bottom of the screen.
+    registerbutton: Register
+    loginbutton: Login
+    exitbutton: Exit
+#These are errors that are not xAuth.
+errors:
+    nopassword: You must fill out a password!
+    passwordmismatch: Passwords don't match!
