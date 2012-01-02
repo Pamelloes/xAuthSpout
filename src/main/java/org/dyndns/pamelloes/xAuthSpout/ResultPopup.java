@@ -23,8 +23,6 @@ public class ResultPopup extends GenericPopup {
 	private boolean returnOnExit;
 	private StartMenu returnTo;
 	
-	private boolean canClose = false;
-	
 	public ResultPopup(XAuthSpout plugin, StartMenu menu, Object[] data) {
 		this.plugin = plugin;
 		
@@ -61,25 +59,15 @@ public class ResultPopup extends GenericPopup {
 	
 	private class ResultScreenListener extends ScreenListener {
 		@Override
-		public void onScreenOpen(ScreenOpenEvent e) {
-			canClose=false;
-		}
-		
-		@Override
 		public void onScreenClose(ScreenCloseEvent e) {
 			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
-			if(!(e.getScreen() instanceof ResultPopup)) return;
-			if(canClose) {
-				e.setCancelled(false);
-				if(returnOnExit) {
-					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-						public void run() {
-							player.getMainScreen().attachPopupScreen(returnTo);
-						}
-					});
-				}
-			} else {
-				e.setCancelled(true);
+			if (!(e.getScreen() instanceof ResultPopup)) return;
+			if (returnOnExit) {
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					public void run() {
+						player.getMainScreen().attachPopupScreen(returnTo);
+					}
+				});
 			}
 		}
 	}
@@ -92,7 +80,6 @@ public class ResultPopup extends GenericPopup {
 		
 		@Override
 		public void onButtonClick(ButtonClickEvent e) {
-			canClose = true;
 			ResultPopup.this.player.getMainScreen().closePopup();
 		}
 	}
