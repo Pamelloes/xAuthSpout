@@ -4,7 +4,6 @@ import org.bukkit.event.Event;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.event.screen.ScreenCloseEvent;
 import org.getspout.spoutapi.event.screen.ScreenListener;
-import org.getspout.spoutapi.event.screen.ScreenOpenEvent;
 import org.getspout.spoutapi.gui.Button;
 import org.getspout.spoutapi.gui.Color;
 import org.getspout.spoutapi.gui.GenericButton;
@@ -50,6 +49,7 @@ public class ResultPopup extends GenericPopup {
 			label.setAuto(true);
 			attachWidget(plugin,label); // Attach the widget to the popup
 		}
+		if(!plugin.getConfig().getBoolean("errors.displaybutton",true)) return;
 		Button button = (Button) new FinishButton("Continue").setWidth(200).setHeight(20); // Read more about creating widgets in Widgets
 		button.setAlign(WidgetAnchor.TOP_CENTER).setAnchor(WidgetAnchor.TOP_CENTER);
 		ypos+=button.getHeight()+5;

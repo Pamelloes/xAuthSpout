@@ -26,7 +26,27 @@ login:
     registerbutton: Register
     loginbutton: Login
     exitbutton: Exit
-#These are errors that are not xAuth.
+#These are errors that are not in xAuth (always supported)
 errors:
     nopassword: You must fill out a password!
     passwordmismatch: Passwords don't match!
+    #in the error/success screen, there is a continue button.
+    #if you have your players report seeing a "Downloading Terrain"
+    #screen after the button gets closed, just turn this to
+    #false and it should be fixed.
+    displaybutton: true
+#How things are registered and/or logged in. If you use xAuth, then put in
+#xauth for the best results, if you use anything else, just put in the command
+#any instance of {password} will be replaced with the given password and {email}
+#will be replaced with the given email (register only). In addition, {user} will
+#be replaced with the player's name. So, a possible thing that could be put in would
+#be "/login {password}" and "/register {password} {email}" In addition, you can
+#repurpose the {email} and {password} by changing their description above and then
+#putting them in a different place.
+#
+#If either one of these is used, then xAuth is needed. If you aren't using xAuth, then
+#I have no way of detecting if the player has registered so there will be a "click to register"
+#button.
+modes:
+    login: xauth
+    register: xauth

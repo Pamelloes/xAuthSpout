@@ -1,5 +1,6 @@
  package org.dyndns.pamelloes.xAuthSpout;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,15 +21,13 @@ import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.cypherx.xauth.xAuth;
-import com.cypherx.xauth.xAuthPlayer;
-
 public class StartMenu extends GenericPopup {
 	private XAuthSpout plugin;
-	private xAuth xauth;
+	private Object xauth;
+	private boolean needsxAuth = true;
 	
 	private SpoutPlayer player;
-	private xAuthPlayer xplayer;
+	private Object xplayer;
 	private Login login;
 	public boolean canClose = false;
 	
@@ -36,10 +35,25 @@ public class StartMenu extends GenericPopup {
 		this.plugin = plugin;
 		this.player = player;
 
-		Plugin p = plugin.getServer().getPluginManager().getPlugin("xAuth");
-		if(p==null) throw new RuntimeException("xAuth could not be found, make sure it is installed and working properly.");
-		xauth = (xAuth) p;
-		xplayer = xauth.getPlayer(player.getName());
+		needsxAuth = (plugin.getConfig().getString("modes.login","xauth").equalsIgnoreCase("xAuth")) || (plugin.getConfig().getString("modes.register","xauth").equalsIgnoreCase("xAuth"));
+		if(needsxAuth) {
+			try {
+				Plugin p = plugin.getServer().getPluginManager().getPlugin("xAuth");
+				if(p==null) throw new RuntimeException("xAuth could not be found, make sure it is installed and working properly.");
+				Class<?> clazz = Class.forName("com.cypherx.xAuth");
+				if(!clazz.isInstance(p)) throw new RuntimeException("xAuth is not an instance of com.cypherx.xAuth. Make sure you are using the correct plugin.");
+				xauth = p;
+				Method m = clazz.getMethod("getPlayer", String.class);
+				xplayer = m.invoke(xauth,player.getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+				xauth = null;
+				xplayer = null;
+			}
+		} else {
+			xauth = null;
+			xplayer = null;
+		}
 		
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, new StartMenuScreenListener(), Event.Priority.Normal, plugin);
 		
@@ -49,7 +63,7 @@ public class StartMenu extends GenericPopup {
 	private void makePopup() {
 		int ypos = showMessage();
 		
-		login = new Login(plugin, xauth, player, xplayer);
+		if(needsxAuth) login = new XAuthLogin(plugin, xauth, player, xplayer);
 		login.setAnchor(WidgetAnchor.TOP_CENTER);
 		login.setWidth(320);
 		login.setHeight(login.getFieldCount() == 2 ? 50 : 100);
