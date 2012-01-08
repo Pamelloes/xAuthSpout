@@ -141,6 +141,7 @@ public class StartMenu extends GenericPopup {
 		public void onScreenClose(ScreenCloseEvent e) {
 			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
 			if(!(e.getScreen() instanceof StartMenu)) return;
+			if(!e.getScreen().equals(StartMenu.this)) return;
 			boolean canclose = canClose.get(StartMenu.this);
 			e.setCancelled(!canclose);
 			if(canclose) canClose.remove(StartMenu.this);
