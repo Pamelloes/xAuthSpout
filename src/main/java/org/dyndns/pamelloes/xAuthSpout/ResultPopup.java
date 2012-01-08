@@ -1,5 +1,8 @@
 package org.dyndns.pamelloes.xAuthSpout;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.event.Event;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.event.screen.ScreenCloseEvent;
@@ -19,7 +22,7 @@ public class ResultPopup extends GenericPopup {
 	
 	private SpoutPlayer player;
 	
-	private boolean returnOnExit;
+	private static Map<ResultPopup,Boolean> returnOnExit = new HashMap<ResultPopup, Boolean>();
 	private StartMenu returnTo;
 	
 	public ResultPopup(XAuthSpout plugin, StartMenu menu, Object[] data) {
@@ -27,7 +30,7 @@ public class ResultPopup extends GenericPopup {
 		
 		player = menu.getPlayer();
 		
-		returnOnExit = !(Boolean) data[0];
+		returnOnExit.put(this,!(Boolean) data[0]);
 		returnTo = menu;
 		
 		String[] message = ((String) data[1]).split("\n");
@@ -62,13 +65,14 @@ public class ResultPopup extends GenericPopup {
 		public void onScreenClose(ScreenCloseEvent e) {
 			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
 			if (!(e.getScreen() instanceof ResultPopup)) return;
-			if (returnOnExit) {
+			if (returnOnExit.get(ResultPopup.this)) {
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						player.getMainScreen().attachPopupScreen(returnTo);
 					}
 				});
 			}
+			returnOnExit.remove(ResultPopup.this);
 		}
 	}
 	

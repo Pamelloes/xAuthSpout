@@ -2,8 +2,10 @@
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -29,7 +31,7 @@ public class StartMenu extends GenericPopup {
 	private SpoutPlayer player;
 	private Object xplayer;
 	private Login login;
-	public boolean canClose = false;
+	public static Map<StartMenu,Boolean> canClose = new HashMap<StartMenu,Boolean>();
 	
 	public StartMenu(XAuthSpout plugin, SpoutPlayer player) {
 		this.plugin = plugin;
@@ -40,8 +42,8 @@ public class StartMenu extends GenericPopup {
 			try {
 				Plugin p = plugin.getServer().getPluginManager().getPlugin("xAuth");
 				if(p==null) throw new RuntimeException("xAuth could not be found, make sure it is installed and working properly.");
-				Class<?> clazz = Class.forName("com.cypherx.xAuth");
-				if(!clazz.isInstance(p)) throw new RuntimeException("xAuth is not an instance of com.cypherx.xAuth. Make sure you are using the correct plugin.");
+				Class<?> clazz = Class.forName("com.cypherx.xauth.xAuth");
+				if(!clazz.isInstance(p)) throw new RuntimeException("xAuth is not an instance of com.cypherx.xauth.xAuth. Make sure you are using the correct plugin.");
 				xauth = p;
 				Method m = clazz.getMethod("getPlayer", String.class);
 				xplayer = m.invoke(xauth,player.getName());
@@ -127,16 +129,21 @@ public class StartMenu extends GenericPopup {
 	}
 	
 	private class StartMenuScreenListener extends ScreenListener {
+		
 		@Override
 		public void onScreenOpen(ScreenOpenEvent e) {
-			canClose=false;
+			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
+			if(!(e.getScreen() instanceof StartMenu)) return;
+			canClose.put(StartMenu.this, false);
 		}
 		
 		@Override
 		public void onScreenClose(ScreenCloseEvent e) {
 			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
 			if(!(e.getScreen() instanceof StartMenu)) return;
-			e.setCancelled(!canClose);
+			boolean canclose = canClose.get(StartMenu.this);
+			e.setCancelled(!canclose);
+			if(canclose) canClose.remove(StartMenu.this);
 		}
 	}
 	
@@ -151,7 +158,7 @@ public class StartMenu extends GenericPopup {
 			Object[] result = login.doLogin();
 			if(result == null) return;
 			ResultPopup rp = new ResultPopup(StartMenu.this.plugin, StartMenu.this, result);
-			canClose = true;
+			canClose.put(StartMenu.this, true);
 			StartMenu.this.player.getMainScreen().closePopup();
 			StartMenu.this.player.getMainScreen().attachPopupScreen(rp);
 		}
