@@ -66,16 +66,13 @@ public class ResultPopup extends GenericPopup {
 			if(!(e.getScreenType()==ScreenType.CUSTOM_SCREEN))return;
 			if (!(e.getScreen() instanceof ResultPopup)) return;
 			if(!e.getScreen().equals(ResultPopup.this)) return;
-			if (returnOnExit.get(ResultPopup.this)) {
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-					public void run() {
-						player.getMainScreen().attachPopupScreen(returnTo);
-					}
-				});
-				returnOnExit.remove(ResultPopup.this);
-			} else {
-				returnOnExit.remove(ResultPopup.this);
-			}
+			final Boolean shouldReturn = returnOnExit.get(ResultPopup.this);
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					returnOnExit.remove(ResultPopup.this);
+					if(shouldReturn)player.getMainScreen().attachPopupScreen(returnTo);
+				}
+			});
 		}
 	}
 	
